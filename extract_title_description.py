@@ -18,9 +18,3 @@ def extract_title_and_description(url):
     
     return title, description
 
-# Example usage:
-url = "https://eventos.itam.mx/es/evento/ciberseguridad-herramientas-del-futuro"
-title, description = extract_title_and_description(url)
-
-print("Title:", title)
-print("Description:", description)
