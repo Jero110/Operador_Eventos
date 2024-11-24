@@ -1,39 +1,26 @@
-name: web_scraping_env
+name: tweet_gen
 channels:
+  - pytorch
+  - nvidia
   - conda-forge
   - defaults
 dependencies:
-  - beautifulsoup4=4.12.3=pyha770c72_0
-  - brotli-python=1.0.9=py39h7a8716b_9
-  - ca-certificates=2024.9.24=hecd8cb5_0
-  - certifi=2024.8.30=pyhd8ed1ab_0
-  - cffi=1.17.1=py39h8ddeee6_0
-  - charset-normalizer=3.4.0=pyhd8ed1ab_0
-  - h2=4.1.0=pyhd8ed1ab_0
-  - hpack=4.0.0=pyh9f0ad1d_0
-  - hyperframe=6.0.1=pyhd8ed1ab_0
-  - idna=3.10=pyhd8ed1ab_0
-  - libcxx=14.0.6=h9765a3e_0
-  - libffi=3.4.4=hecd8cb5_1
-  - lz4-c=1.9.4=hf0c8a7f_0
-  - ncurses=6.4=hcec6c5f_0
-  - openssl=3.4.0=hd471939_0
-  - pip=24.2=py39hecd8cb5_0
-  - pycparser=2.22=pyhd8ed1ab_0
-  - pysocks=1.7.1=pyha2e5f31_6
-  - python=3.9.20=hce00570_1
-  - python_abi=3.9=2_cp39
-  - readline=8.2=hca72f7f_0
-  - requests=2.32.3=pyhd8ed1ab_0
-  - setuptools=75.1.0=py39hecd8cb5_0
-  - soupsieve=2.5=pyhd8ed1ab_1
-  - sqlite=3.45.3=h6c40b1e_0
-  - tk=8.6.14=h4d00af3_0
-  - tzdata=2024b=h04d1e81_0
-  - urllib3=2.2.3=pyhd8ed1ab_0
-  - wheel=0.44.0=py39hecd8cb5_0
-  - xz=5.4.6=h6c40b1e_1
-  - zlib=1.2.13=h4b97444_1
-  - zstandard=0.23.0=py39hc23f734_1
-  - zstd=1.5.6=h138b38a_0
-prefix: /opt/miniconda3/envs/web_scraping_env
+  - python=3.9
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=12.4  # Ajusta esta versión según tu CUDA
+  - cudatoolkit
+  - transformers
+  - accelerate
+  - tensorboard
+  - tweepy
+  - pandas
+  - beautifulsoup4
+  - requests
+  - python-dotenv
+  - pip
+  - pip:
+    - datasets>=2.12.0
+    - bitsandbytes>=0.41.0
+    - deepspeed>=0.9.0

@@ -2,7 +2,7 @@ import requests
 import os
 from urllib.parse import urlparse
 
-def download_image(image_url, save_directory='downloaded_images'):
+def download_image(image_url, save_directory='./downloaded_images'):
     """
     Download an image from a URL and save it to a specified directory.
     
