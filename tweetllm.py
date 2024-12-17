@@ -2,24 +2,34 @@ import os
 from dotenv import load_dotenv
 import requests
 
-buffer_years=2
+# Load the environment variables from a .env file
 load_dotenv()
-OPENROUTER_API_KEY2 = os.getenv('OPENROUTER_API_KEY2') # <-- Put your API key here
-def tweet(query):
+
+# Fetch the OpenAI API key from the environment
+API_KEY = os.getenv("OPENAI_API_KEY")
+
+if not API_KEY:
+    raise ValueError("No API key found. Please set OPENAI_API_KEY in your environment variables.")
+
+def tweet(query: str) -> str:
     try:
+        # Ensure the API key exists
+        if not API_KEY:
+            return "Error: No API key available"
+
+        # Make a POST request to OpenAI's API
         response = requests.post(
-            url="https://openrouter.ai/api/v1/chat/completions",
+            url="https://api.openai.com/v1/chat/completions",
             headers={
-                "Authorization": f"Bearer {OPENROUTER_API_KEY2}",
+                "Authorization": f"Bearer {API_KEY}",
                 "Content-Type": "application/json",
-                "HTTP-Referer": "http://localhost:3000",
             },
             json={
-                "model": "meta-llama/llama-3.2-90b-vision-instruct:free",
+                "model": "gpt-4-turbo",  # Use GPT-4 turbo (mini version, if applicable)
                 "messages": [
                     {
                         "role": "system",
-                        "content": "quiero generar tweets para una uniiversidad, que te-nga emojis pero moderados y relacionados al tema no los sobreuses, que solo regrese el tweet sin la instruccion"
+                        "content": "Generate tweets for a university. Include emojis related to the topic but use them moderately. Return only the tweet without instructions."
                     },
                     {
                         "role": "user",
@@ -30,12 +40,14 @@ def tweet(query):
             }
         )
         
+        # Parse the JSON response
         result = response.json()
-        if 'error' in result:
-            return f"Error: {result['error']}"
+        if response.status_code != 200:
+            error_message = result.get("error", {}).get("message", "Unknown error")
+            return f"Error: {error_message}"
             
-        date = result['choices'][0]['message']['content'].strip()
-        return date
+        # Extract and return the tweet content
+        return result['choices'][0]['message']['content'].strip()
 
     except Exception as e:
         return f"Error: {str(e)}"

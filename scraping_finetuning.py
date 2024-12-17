@@ -8,6 +8,7 @@ from typing import List
 import logging
 import csv
 import os
+import time  # Ensure this import is at the top level
 
 def setup_logging():
     """Configure logging for the scraping process."""
@@ -42,7 +43,7 @@ def process_event_links(urls: List[str], logger: logging.Logger) -> List[dict]:
             
             for link in event_links:
                 try:
-                    title, description, image, date, time, location = extract_title_description_and_image(link)
+                    title, description, image, date, time_val, location = extract_title_description_and_image(link)
                     
                     # Create Event object
                     event = Event(
@@ -51,13 +52,14 @@ def process_event_links(urls: List[str], logger: logging.Logger) -> List[dict]:
                         image_url=image,
                         event_url=link,
                         date=date,
-                        time=time,
+                        time=time_val,  # Changed variable name to avoid shadowing time module
                         location=location
                     )
                     
                     # Generate tweet for the event
                     event_str = f"Title: {event.title}\nDescription: {event.description}\nDate: {event.date}, Time: {event.time}\nLocation: {event.location}\nLink: {event.event_url}"
                     tweet_text = tweet(event_str)
+                    print(f"Tweet generado: {tweet_text}")
                     
                     # Append event and tweet as a dictionary
                     events_with_tweets.append({
@@ -118,6 +120,6 @@ def scraping(urls: List[str]):
 
 if __name__ == "__main__":
     # Define the range of URLs to scrape
-    urls_to_scrape = [f"http://boletin.itam.mx/mail/repertorio/2024/{i}/index.html" for i in range(47, 48)]
+    urls_to_scrape = [f"http://boletin.itam.mx/mail/repertorio/2024/{i}/index.html" for i in range(34, 48)]
     
     scraping(urls_to_scrape)

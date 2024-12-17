@@ -1,14 +1,12 @@
 from event import Event
 from extract_links_calendar import extract_event_links_from_calendar
 from extract_title_description import extract_title_description_and_image
+from url_imagen import download_image
 import os
 import logging
 from datetime import datetime
 import csv
 from typing import List, Optional
-import requests
-from urllib.parse import urlparse
-import re
 
 def sanitize_filename(title: str) -> str:
     """
@@ -20,51 +18,9 @@ def sanitize_filename(title: str) -> str:
     Returns:
         str: Safe filename
     """
-    # Remove invalid filename characters and replace spaces with underscores
     safe_title = re.sub(r'[<>:"/\\|?*]', '', title)
     safe_title = safe_title.replace(' ', '_')
     return safe_title[:100]  # Limit length to avoid too long filenames
-
-def download_image_with_event_name(image_url: str, event_title: str, save_directory: str = 'imagenes') -> Optional[str]:
-    """
-    Download an image and save it with the event title as part of the filename.
-    
-    Args:
-        image_url (str): URL of the image to download
-        event_title (str): Title of the event
-        save_directory (str): Directory to save the image
-        
-    Returns:
-        Optional[str]: Path to the saved image if successful, None if failed
-    """
-    try:
-        if not os.path.exists(save_directory):
-            os.makedirs(save_directory)
-        
-        # Get file extension from URL
-        parsed_url = urlparse(image_url)
-        original_filename = os.path.basename(parsed_url.path)
-        file_extension = os.path.splitext(original_filename)[1]
-        if not file_extension:
-            file_extension = '.jpg'  # Default extension
-            
-        # Create filename using event title
-        safe_title = sanitize_filename(event_title)
-        filename = f"{safe_title}{file_extension}"
-        save_path = os.path.join(save_directory, filename)
-        
-        # Download and save image
-        response = requests.get(image_url)
-        response.raise_for_status()
-        
-        with open(save_path, 'wb') as file:
-            file.write(response.content)
-            
-        return save_path
-    
-    except Exception as e:
-        print(f"Error downloading image for event '{event_title}': {e}")
-        return None
 
 def process_event(url: str, logger: logging.Logger) -> Optional[tuple[Event, str]]:
     """
@@ -82,10 +38,10 @@ def process_event(url: str, logger: logging.Logger) -> Optional[tuple[Event, str
         
         title, description, image_url, date, time, location = extract_title_description_and_image(url)
         
-        # Download image if available
+        # Download image if available using url_imagen module
         image_path = None
         if image_url:
-            image_path = download_image_with_event_name(image_url, title)
+            image_path = download_image(image_url)
             if image_path:
                 logger.info(f"Image downloaded successfully to {image_path}")
             else:
@@ -154,7 +110,7 @@ def scrape_calendar(calendar_url: str):
     logger = setup_logging()
     
     # Create necessary directories
-    for directory in ['eventos', 'imagenes']:
+    for directory in ['eventos', 'downloaded_images']:  # Changed 'imagenes' to 'downloaded_images'
         if not os.path.exists(directory):
             os.makedirs(directory)
             logger.info(f"Created directory: {directory}")
@@ -198,5 +154,5 @@ def setup_logging() -> logging.Logger:
 
 if __name__ == "__main__":
     # Example calendar URL
-    calendar_url = "http://boletin.itam.mx/mail/repertorio/2024/47/index.html"
+    calendar_url = "http://boletin.itam.mx/mail/repertorio/2024/49/index.html"
     scrape_calendar(calendar_url)
